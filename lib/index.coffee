@@ -40,8 +40,20 @@ getDbConnection = ->
 exports.createConnection = (_dbConfig) ->
 	conn = mysql.createConnection(_dbConfig)
 
-	conn.execute = ()->
+	conn.execute = ->
 		execute.apply(this, arguments)
+
+	conn.executeScalar = ->
+		executeScalar.apply(this, arguments)
+
+	conn.update = ->
+		update.apply(this, arguments)
+
+	conn.insert = ->
+		insert.apply(this, arguments)
+
+	conn.executeFirstRow = ->
+		executeFirstRow.apply(this, arguments)
 
 	return conn
 
@@ -64,11 +76,16 @@ dbError = exports.dbError = (err, cb, cusResponseError) ->
 @param {Function} cb callback function
 ###
 execute = (sql, paras, cb) ->
+	if _.isFunction(paras)
+		cb = paras
+		paras = []
+
 	this.query sql, paras, (err, result) ->
-		if err
-			dbError err, cb
-		else
-			cb err, result
+		if _.isFunction(cb)
+			if err
+				cb err
+			else
+				cb err, result
 
 ###
 查询第一行第一列的内容
@@ -76,74 +93,73 @@ execute = (sql, paras, cb) ->
 @param {Array} paras parameters array
 @param {Function} cb callback function
 ###
-exports.executeScalar = (conn, sql, paras, cb) ->
-	conn = getDbConnection()
-	conn.query sql, paras, (err, result) ->
-		conn.end()
-		if err
-			dbError err, cb
-		else
-			if result.length > 0
-				cb null, result[0][0]
+executeScalar = (sql, paras, cb) ->
+	if _.isFunction(paras)
+		cb = paras
+		paras = []
+
+	this.query sql, paras, (err, result) ->
+		if _.isFunction(cb)
+			if err
+				cb err
+			else
+				if result.length > 0
+					for name,value of result[0]
+						cb null, value
+						return
+				else
+					cb null, null
+
+###
+    更新
+###
+update = (sql, paras, cb)->
+	if _.isFunction(paras)
+		cb = paras
+		paras = []
+
+	this.query sql, paras, (err, result)->
+		if _.isFunction(cb)
+			if err
+				cb err
+			else if result.affectedRows > 0
+				cb null, true, result.affectedRows
+			else
+				cb null, false
+
+###
+    插入
+###
+insert = (sql, paras, cb)->
+	if _.isFunction(paras)
+		cb = paras
+		paras = []
+
+	this.query sql, paras, (err, result)->
+		if _.isFunction(cb)
+			if err
+				cb err
+			else if result.affectedRows > 0
+				cb null, true, result.insertId
+			else
+				cb null, false
+
+###
+    获取第一行数据
+###
+executeFirstRow = (sql, paras, cb)->
+	if _.isFunction(paras)
+		cb = paras
+		paras = []
+
+	this.query sql, paras, (err, result)->
+		if _.isFunction(cb)
+			if err
+				cb err
+			else if result.length > 0
+				cb null, result[0]
 			else
 				cb null, null
-
-###
-执行语句返回受影响行数
-@param {String} sql
-@param {Array} paras parameters array
-@param {Function} cb callback function
-###
-exports.executeNonQuery = (sql, paras, cb) ->
-	conn = getDbConnection()
-	conn.query sql, paras, (err, result) ->
-		conn.end()
-		if err
-			dbError err, cb
-		else
-			cb null, result.affectedRows, result.insertId  if _.isFunction(cb)
-
-###
-    update
-###
-exports.executeUpdate = (sql, paras, cb)->
-	conn = getDbConnection()
-	conn.query sql, paras, (err, result)->
-		conn.end()
-		if err
-			dbError err, cb
-		else if result.affectedRows <= 0
-			cb new Error("operation fail")
-		else
-			cb null
-
-###
-查询第一行
-@param {String} sql
-@param {Array} paras parameters array
-@param {Function} cb callback function
-###
-exports.executeFirstRow = (sql, paras, cb) ->
-	conn = getDbConnection()
-	conn.query sql, paras, (err, result) ->
-		conn.end()
-		if err
-			dbError err, cb
-		else if result.length > 0
-			cb null, result[0]
-		else
-			cb null, null
-
-###
-拼接sql
-@param {Array} array sql array
-@return {String}
-###
-exports.concatSql = (array) ->
-	if _.isArray(array)
-		array.join " "
-	else
-		throw new Error("parameter must be a array")
 
 ###
     set default options

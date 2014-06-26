@@ -38,3 +38,13 @@ exports.testExecute = (test)->
 		test.ok result.length > 0
 		test.ok result[0].result is 2
 		test.done()
+
+exports.testExecuteScaler = (test)->
+	conn = sqlHelper.createConnection(dbConfig)
+	conn.connect()
+	sql = "select 1+1 as result,1+2 as result2;"
+
+	conn.executeScalar sql, [], (err, result)->
+		test.ok not err
+		test.ok result is 2
+		test.done()
