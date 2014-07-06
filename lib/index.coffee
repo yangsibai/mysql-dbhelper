@@ -19,21 +19,6 @@ options =
 	debug: true
 
 ###
-    config
-###
-#module.exports = (_options)->
-#	setOptions options, _options, true
-
-###
-获取数据库连接
-@return {Connection}
-###
-getDbConnection = ->
-	conn = mysql.createConnection(options.dbConfig)
-	conn.connect()
-	return conn
-
-###
 获取连接
 @param {Function} cb callback function
 ###
@@ -54,7 +39,6 @@ exports.createConnection = (_dbConfig) ->
 
 	conn.executeFirstRow = ->
 		executeFirstRow.apply(this, arguments)
-
 	return conn
 
 ###
@@ -122,8 +106,8 @@ update = (sql, paras, cb)->
 		if _.isFunction(cb)
 			if err
 				cb err
-			else if result.affectedRows > 0
-				cb null, true, result.affectedRows
+			else if result.changedRows > 0
+				cb null, true, result.changedRows
 			else
 				cb null, false
 
