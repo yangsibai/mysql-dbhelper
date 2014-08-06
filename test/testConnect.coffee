@@ -1,11 +1,12 @@
-sqlHelper = require('../lib/index')
-
 dbConfig =
 	host: '127.0.0.1',
 	user: 'root',
 	port: 3306,
 	password: ' ',
 	database: 'mockup'
+
+sqlHelper = require('../lib/index')
+	dbConfig: dbConfig
 
 ###
     test if node unit work well
@@ -39,12 +40,25 @@ exports.testExecute = (test)->
 		test.ok result[0].result is 2
 		test.done()
 
-exports.testExecuteScaler = (test)->
+exports.test$Execute = (test)->
+	conn = sqlHelper.createConnection()
+	sql = "select 1+1 as result;"
+	conn.$execute sql, (err, result)->
+		test.ok not conn._socket._readableState.ended
+		test.ok not err
+		test.ok result.length > 0
+		test.ok result[0].result is 2
+		setTimeout ()->
+			test.ok conn._socket._readableState.ended
+			test.done()
+		, 100
+
+exports.testExecuteScalar = (test)->
 	conn = sqlHelper.createConnection(dbConfig)
 	conn.connect()
 	sql = "select 1+1 as result,1+2 as result2;"
 
-	conn.executeScalar sql, [], (err, result)->
+	conn.executeScalar sql,(err, result)->
 		test.ok not err
 		test.ok result is 2
 		test.done()

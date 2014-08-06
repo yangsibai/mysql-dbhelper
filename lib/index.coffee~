@@ -15,7 +15,7 @@ _options =
     onError: (err)->
         console.dir err
     customError: null
-    timeout: 60
+    timeout: 10
     debug: true
 
 ###

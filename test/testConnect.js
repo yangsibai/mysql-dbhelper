@@ -2,8 +2,6 @@
 (function() {
   var dbConfig, sqlHelper;
 
-  sqlHelper = require('../lib/index');
-
   dbConfig = {
     host: '127.0.0.1',
     user: 'root',
@@ -11,6 +9,10 @@
     password: ' ',
     database: 'mockup'
   };
+
+  sqlHelper = require('../lib/index')({
+    dbConfig: dbConfig
+  });
 
 
   /*
@@ -53,12 +55,28 @@
     });
   };
 
-  exports.testExecuteScaler = function(test) {
+  exports.test$Execute = function(test) {
+    var conn, sql;
+    conn = sqlHelper.createConnection();
+    sql = "select 1+1 as result;";
+    return conn.$execute(sql, function(err, result) {
+      test.ok(!conn._socket._readableState.ended);
+      test.ok(!err);
+      test.ok(result.length > 0);
+      test.ok(result[0].result === 2);
+      return setTimeout(function() {
+        test.ok(conn._socket._readableState.ended);
+        return test.done();
+      }, 100);
+    });
+  };
+
+  exports.testExecuteScalar = function(test) {
     var conn, sql;
     conn = sqlHelper.createConnection(dbConfig);
     conn.connect();
     sql = "select 1+1 as result,1+2 as result2;";
-    return conn.executeScalar(sql, [], function(err, result) {
+    return conn.executeScalar(sql, function(err, result) {
       test.ok(!err);
       test.ok(result === 2);
       return test.done();
