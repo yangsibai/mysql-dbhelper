@@ -1,12 +1,10 @@
-dbConfig =
-	host: '127.0.0.1',
-	user: 'root',
-	port: 3306,
-	password: ' ',
-	database: 'mockup'
-
 sqlHelper = require('../lib/index')
-	dbConfig: dbConfig
+	dbConfig:
+		host: '192.168.1.88',
+		user: 'root',
+		port: 3306,
+		password: '',
+		database: 'test'
 
 ###
     test if node unit work well
@@ -19,25 +17,25 @@ exports.testNodeUnitWork = (test)->
     test mysql connection ok
 ###
 exports.testCreateConnection = (test)->
-	conn = sqlHelper.createConnection(dbConfig)
-	conn.connect()
+	conn = sqlHelper.createConnection()
 	sql = "select 1+1 as result;"
 	conn.query sql, [], (err, result)->
+		console.dir err
 		test.ok not err
 		test.ok result.length > 0
 		test.ok result[0].result is 2
 		test.done()
 
 exports.testExecute = (test)->
-	conn = sqlHelper.createConnection(dbConfig)
-	conn.connect()
+	conn = sqlHelper.createConnection()
 
-	sql = "select 1+1 as result;"
+	sql = "select * from test;"
 
-	conn.execute sql, [], (err, result)->
+	conn.execute sql, (err, result)->
+		console.dir err
+		console.dir result
 		test.ok not err
 		test.ok result.length > 0
-		test.ok result[0].result is 2
 		test.done()
 
 exports.test$Execute = (test)->
@@ -54,11 +52,10 @@ exports.test$Execute = (test)->
 		, 100
 
 exports.testExecuteScalar = (test)->
-	conn = sqlHelper.createConnection(dbConfig)
-	conn.connect()
+	conn = sqlHelper.createConnection()
 	sql = "select 1+1 as result,1+2 as result2;"
 
-	conn.executeScalar sql,(err, result)->
+	conn.executeScalar sql, (err, result)->
 		test.ok not err
 		test.ok result is 2
 		test.done()
