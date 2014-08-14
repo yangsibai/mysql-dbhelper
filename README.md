@@ -34,9 +34,9 @@
 
 以下所有方法，添加 $ 开头表示执行 sql 结束后自动关闭连接。
 
-例如 conn.execute 对应的自动关闭连接的方法为 conn.$execute。
+例如 `conn.execute` 对应的自动关闭连接的方法为 `conn.$execute`。
 
-所有方法中第二个参数参数数组 params 都是可以省略的。
+所有方法中第二个参数参数数组 `params` 都是可以省略的。
 
 ###conn.execute(sql,[params,]callback)
 
