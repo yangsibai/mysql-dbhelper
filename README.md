@@ -1,5 +1,9 @@
-##mysql-helper
+##mysql-dbhelper
 一个简单，易用，友好的 node-mysql 的包装类
+
+###Install
+
+    npm install mysql-dbhelper
 
 ###Get Start
 
