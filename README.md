@@ -32,7 +32,13 @@
 
 ##api
 
-###conn.execute
+以下所有方法，添加 $ 开头表示执行 sql 结束后自动关闭连接。
+
+例如 conn.execute 对应的自动关闭连接的方法为 conn.$execute。
+
+所有方法中第二个参数参数数组 params 都是可以省略的。
+
+###conn.execute(sql,[params,]callback)
 
 执行 sql 然后返回执行结果
 
@@ -42,7 +48,7 @@
 		result.affectedRows //受影响的行数
     })
 
-###conn.executeScalar
+###conn.executeScalar(sql,[params,]callback)
 
 执行 sql 然后返回第一行第一列的值，如果没有，返回 null
 
@@ -51,7 +57,7 @@
         console.log(val);
     });
 
-###conn.executeFirstRow
+###conn.executeFirstRow(sql,[params,]callback)
 
 执行 sql 然后返回第一行的内容,如果没有，返回null
 
@@ -60,7 +66,7 @@
         console.dir(firstRow);
     })
 
-###conn.executeNonQuery
+###conn.executeNonQuery(sql,[params,]callback)
 
 执行 sql 然后返回受影响的行数
 
@@ -69,7 +75,7 @@
         console.log(affectRowsCount);
     });
 
-###conn.update
+###conn.update(sql,[params,]callback)
 
 执行 update 语句，然后返回是否成功，和真实受影响的行数
 
@@ -79,7 +85,7 @@
         console.log(affectedRows);
     })
 
-###conn.insert
+###conn.insert(sql,[params,]callback)
 
 执行 insert 语句，然后返回是否成功，和自增 id
 
@@ -87,7 +93,7 @@
         
     });
 
-###conn.exist
+###conn.exist(sql,[params,],callback)
 
 执行 sql ,返回是否存在查询结果
 
