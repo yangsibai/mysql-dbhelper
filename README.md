@@ -1,11 +1,16 @@
 ##mysql-helper
-对 node.js mysql 的一个简单包装
+一个简单，易用，友好的 node-mysql 的包装类
 
-##api
+###Get Start
 
-	dbHelper=require("mysql-dbhelper")(options)
-
-	conn=dbHelper.createConnection()
+	dbHelper=require("mysql-dbhelper")(options);
+	conn=dbHelper.createConnection();
+    sql="SELECT name FROM users WHERE id=?";
+    userId=10000;
+    conn.$executeScalar sql,[userId],function (err,name){
+        console.dir(err);
+        console.log(name);
+    };
 
 ###options
     defaultOptions=
@@ -21,73 +26,68 @@
         timeout: 60
         debug: true
 
+##api
+
 ###conn.execute
 
 执行 sql 然后返回执行结果
 
-	conn.execute(sql,[params],cb)
-	
-	cb=function(err,result){
-		conn.length //返回结果集的行数
-		conn.insertId //insert 语句插入完成后的自增id
-		conn.affectedRows //受影响的行数
-	}
+	conn.execute(sql,[params],function(err,res){
+		result.length //返回结果集的行数
+		result.insertId //insert 语句插入完成后的自增id
+		result.affectedRows //受影响的行数
+    })
 
 ###conn.executeScalar
 
 执行 sql 然后返回第一行第一列的值，如果没有，返回 null
 
-	conn.executeScalar(sql,[params],cb)
-	
-	cb=function(err,val){
-	}
+	conn.executeScalar(sql,[params],function(err,val){
+        console.dir(err);
+        console.log(val);
+    });
 
 ###conn.executeFirstRow
 
 执行 sql 然后返回第一行的内容,如果没有，返回null
 
-	conn.executeFirstRow(sql,[params],cb)
-
-    cb=function(err,firstRow){
-        
-    }
+	conn.executeFirstRow(sql,[params],(err,firstRow){
+        console.dir(err);
+        console.dir(firstRow);
+    })
 
 ###conn.executeNonQuery
 
 执行 sql 然后返回受影响的行数
 
-	conn.executeNonQuery(sql,[params],cb)
-
-    cb=function(err,affectRows){
-        
-    }
+	conn.executeNonQuery(sql,[params],function(err,affectRowsCount){
+        console.dir(err);
+        console.log(affectRowsCount);
+    });
 
 ###conn.update
 
 执行 update 语句，然后返回是否成功，和真实受影响的行数
 
-	conn.update(sql,[params],cb)
-    
-    cb=function(err,success,affectedRows){
-        
-    }
+	conn.update(sql,[params],function(err,success,affectedRows){
+        console.dir(err);
+        console.log(success);
+        console.log(affectedRows);
+    })
 
 ###conn.insert
 
 执行 insert 语句，然后返回是否成功，和自增 id
 
-	conn.insert(sql,[params],cb)
-
-    cb=function(err,success,insertId){
+	conn.insert(sql,[params],function(err,success,insertId){
         
-    }
+    });
 
 ###conn.exist
 
 执行 sql ,返回是否存在查询结果
 
-	conn.insert(sql,[params],cb)
-
-    cb=function(err,exist){
-        
-    }
+	conn.insert(sql,[params],function(err,exist){
+        console.dir(err);
+        console.log(exist);
+    })
