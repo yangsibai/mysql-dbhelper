@@ -16,7 +16,7 @@ _options =
 		console.dir err
 	customError: null
 	timeout: 60
-	debug: true
+	debug: false
 
 ###
 获取连接
@@ -87,6 +87,7 @@ execute = (sql, paras, cb) ->
 		paras = []
 	@query sql, paras, (err, result)->
 		if err
+			console.dir err if _options.debug
 			_options.onError err
 			err = _options.customError if _options.customError
 		cb err, result if _.isFunction(cb)
