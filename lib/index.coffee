@@ -88,8 +88,8 @@ execute = (sql, paras, cb) ->
 	@query sql, paras, (err, result)->
 		if err
 			console.dir err if _options.debug
-			_options.onError err
-			err = _options.customError if _options.customError
+			_options.onError err # catch error
+			err = _options.customError if _options.customError # hide real error
 		cb err, result if _.isFunction(cb)
 
 ###
