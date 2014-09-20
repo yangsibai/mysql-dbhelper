@@ -80,6 +80,20 @@
     });
   };
 
+  exports.testEndConnection = function(test) {
+    var conn, sql;
+    conn = sqlHelper.createConnection();
+    sql = "select 1 + 1 as result;";
+    return conn.executeScalar(sql, function(err, result) {
+      test.ok(!err);
+      test.ok(result === 2);
+      return conn.end(function() {
+        conn.end();
+        return test.done();
+      });
+    });
+  };
+
 }).call(this);
 
 //# sourceMappingURL=testConnect.map

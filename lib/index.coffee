@@ -5,6 +5,9 @@ created by massimo on 14-3-14.
 mysql = require("mysql")
 _ = require("underscore")
 
+###
+    default config
+###
 _options =
 	dbConfig:
 		host: 'localhost',
@@ -19,8 +22,8 @@ _options =
 	debug: false
 
 ###
-获取连接
-@param {function} cb callback function
+	获取连接
+	@param {function} cb callback function
 ###
 createConnection = () ->
 	conn = mysql.createConnection(_options.dbConfig)
@@ -73,13 +76,19 @@ createConnection = () ->
 	conn.$exist = ->
 		$exist.apply(this, arguments)
 
+	proxied = conn.end
+
+	conn.end = (cb)->
+		return proxied.apply(this, arguments) unless conn._socket._readableState.ended
+		cb(new Error("connection has been closed")) if _.isFunction(cb)
+
 	return conn
 
 ###
-执行 sql
-@param {String} sql
-@param {Array} paras parameters array
-@param {Function} cb callback function
+	执行 sql
+	@param {String} sql
+	@param {Array} paras parameters array
+	@param {Function} cb callback function
 ###
 execute = (sql, paras, cb) ->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -93,7 +102,10 @@ execute = (sql, paras, cb) ->
 		cb err, result if _.isFunction(cb)
 
 ###
-#查询并在完成后立即关闭连接
+	查询并在完成后立即关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $execute = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -104,10 +116,10 @@ $execute = (sql, paras, cb)->
 		@end()
 
 ###
-查询第一行第一列的内容
-@param {String} sql
-@param {Array} paras parameters array
-@param {Function} cb callback function
+	查询第一行第一列的内容
+	@param {String} sql
+	@param {Array} paras parameters array
+	@param {Function} cb callback function
 ###
 executeScalar = (sql, paras, cb) ->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -125,7 +137,10 @@ executeScalar = (sql, paras, cb) ->
 				cb null, null
 
 ###
-#查询第一行第一列的内容，然后自动关闭连接
+	查询第一行第一列的内容，然后自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $executeScalar = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -136,7 +151,10 @@ $executeScalar = (sql, paras, cb)->
 		@end()
 
 ###
-更新
+	更新
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 update = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -152,7 +170,10 @@ update = (sql, paras, cb)->
 				cb null, false
 
 ###
-#更新并且自动关闭连接
+	更新并且自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $update = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -163,7 +184,10 @@ $update = (sql, paras, cb)->
 		@end()
 
 ###
-插入
+	插入
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 insert = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -179,7 +203,10 @@ insert = (sql, paras, cb)->
 				cb null, false
 
 ###
-#插入数据并且自动关闭连接
+	插入数据并且自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $insert = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -190,7 +217,10 @@ $insert = (sql, paras, cb)->
 		@end()
 
 ###
-执行sql,返回受影响的行数
+	执行sql,返回受影响的行数
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 executeNonQuery = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -206,7 +236,10 @@ executeNonQuery = (sql, paras, cb)->
 				cb null, false
 
 ###
-#执行sql,返回受影响的行数，然后自动关闭连接
+	执行sql,返回受影响的行数，然后自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $executeNonQuery = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -217,7 +250,10 @@ $executeNonQuery = (sql, paras, cb)->
 		@end()
 
 ###
-获取第一行数据
+	获取第一行数据
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 executeFirstRow = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -233,7 +269,10 @@ executeFirstRow = (sql, paras, cb)->
 				cb null, null
 
 ###
-#获取第一行的数据，然后自动关闭连接
+	获取第一行的数据，然后自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $executeFirstRow = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -245,6 +284,9 @@ $executeFirstRow = (sql, paras, cb)->
 
 ###
     判断是否存在
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 exist = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -262,6 +304,9 @@ exist = (sql, paras, cb)->
 
 ###
     判断是否存在，然后自动关闭连接
+    @param {String} sql
+    @param {Array} [paras]
+    @param {Function} cb callback function
 ###
 $exist = (sql, paras, cb)->
 	if _.isFunction(paras) and _.isUndefined(cb)
@@ -273,9 +318,9 @@ $exist = (sql, paras, cb)->
 			if err
 				cb err
 			else if results.length > 0
-				cb null, true
+				cb null, true, results
 			else
-				cb null, false
+				cb null, false, results
 			@end()
 
 module.exports = exports = (options)->

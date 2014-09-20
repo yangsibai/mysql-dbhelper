@@ -59,3 +59,13 @@ exports.testExecuteScalar = (test)->
 		test.ok not err
 		test.ok result is 2
 		test.done()
+
+exports.testEndConnection = (test)->
+	conn = sqlHelper.createConnection()
+	sql = "select 1 + 1 as result;"
+	conn.executeScalar sql, (err, result)->
+		test.ok not err
+		test.ok result is 2
+		conn.end ()->
+			conn.end()
+			test.done()
