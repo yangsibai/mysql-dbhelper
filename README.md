@@ -1,6 +1,6 @@
 ##mysql-dbhelper
 
-一个简单，易用，友好的 node-mysql 的包装类
+一个简单，易用，友好的 node-mysql 帮助模块。
 
 [![NPM](https://nodei.co/npm/mysql-dbhelper.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/mysql-dbhelper/)
 
@@ -18,7 +18,7 @@
 		// code
 	};
 
-###options
+###Options
 
 	defaultOptions = {
 		dbConfig: {
@@ -31,8 +31,8 @@
 		onError: function(err){
 			console.dir(err);
 		},
-		customError: null,
-		timeout: 60,
+		customError: null, // if specialed, will hide original error, please catch real error by onError
+		timeout: 60, // auto close connection after 60 seconds
 		debug: false
 	}
 
