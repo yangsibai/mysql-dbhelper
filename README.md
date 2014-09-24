@@ -2,6 +2,8 @@
 
 一个简单，易用，友好的 node-mysql 的包装类
 
+[![NPM](https://nodei.co/npm/mysql-dbhelper.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/mysql-dbhelper/)
+
 ###Install
 
     npm install mysql-dbhelper
