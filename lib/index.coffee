@@ -37,7 +37,11 @@ createConnection = () ->
 
     conn.end = (cb)->
         clearTimeout(timeoutObj)
-        return proxied.apply(this, arguments)
+        try
+            return proxied.apply(this, arguments)
+        catch e
+            _options.onError(err)
+            return undefined
 
     conn.execute = ->
         execute.apply(this, arguments)
