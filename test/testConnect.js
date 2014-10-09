@@ -75,7 +75,6 @@
     return conn.executeScalar(sql, function(err, result) {
       test.ok(!err);
       test.ok(result === 2);
-      conn.end();
       return test.done();
     });
   };

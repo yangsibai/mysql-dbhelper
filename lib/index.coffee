@@ -18,7 +18,7 @@ _options =
     onError: (err)->
         console.dir err
     customError: null
-    timeout: 60
+    timeout: 30
     debug: false
 
 ###
@@ -32,7 +32,7 @@ createConnection = () ->
 
     #auto close after 60 seconds
     timeoutObj = setTimeout ->
-        proxied.call(undefined)
+        proxied.apply(conn)
     , _options.timeout * 1000
 
     conn.end = (cb)->
@@ -42,6 +42,11 @@ createConnection = () ->
         catch e
             _options.onError(err)
             return undefined
+
+    queryProxied = conn.query
+    conn.query = ->
+        conn.lastQuery = arguments[0]
+        return queryProxied.apply(this, arguments)
 
     conn.execute = ->
         execute.apply(this, arguments)

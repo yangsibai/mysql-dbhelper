@@ -31,8 +31,8 @@
 		onError: function(err){
 			console.dir(err);
 		},
-		customError: null, // if specialed, will hide original error, please catch real error by onError
-		timeout: 60, // auto close connection after 60 seconds
+		customError: null, // if specified , will hide original error, please catch real error by onError
+		timeout: 30, // auto close connection after 30 seconds
 		debug: false
 	}
 

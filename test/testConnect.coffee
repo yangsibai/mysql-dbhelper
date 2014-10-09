@@ -57,7 +57,6 @@ exports.testExecuteScalar = (test)->
     conn.executeScalar sql, (err, result)->
         test.ok not err
         test.ok result is 2
-        conn.end()
         test.done()
 
 exports.testEndConnection = (test)->
