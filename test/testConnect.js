@@ -32,10 +32,10 @@
     conn = sqlHelper.createConnection();
     sql = "select 1+1 as result;";
     return conn.query(sql, [], function(err, result) {
-      console.dir(err);
       test.ok(!err);
       test.ok(result.length > 0);
       test.ok(result[0].result === 2);
+      conn.end();
       return test.done();
     });
   };
@@ -45,10 +45,9 @@
     conn = sqlHelper.createConnection();
     sql = "select * from test;";
     return conn.execute(sql, function(err, result) {
-      console.dir(err);
-      console.dir(result);
       test.ok(!err);
       test.ok(result.length > 0);
+      conn.end();
       return test.done();
     });
   };
@@ -76,6 +75,7 @@
     return conn.executeScalar(sql, function(err, result) {
       test.ok(!err);
       test.ok(result === 2);
+      conn.end();
       return test.done();
     });
   };
@@ -88,7 +88,13 @@
       test.ok(!err);
       test.ok(result === 2);
       return conn.end(function() {
-        conn.end();
+        var e;
+        try {
+          conn.end();
+        } catch (_error) {
+          e = _error;
+          test.ok(e);
+        }
         return test.done();
       });
     });
