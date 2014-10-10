@@ -20,6 +20,7 @@ exports.testCreateConnection = (test)->
     conn = sqlHelper.createConnection()
     sql = "select 1+1 as result;"
     conn.query sql, [], (err, result)->
+        console.dir(err)
         test.ok not err
         test.ok result.length > 0
         test.ok result[0].result is 2

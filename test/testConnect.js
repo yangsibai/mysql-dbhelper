@@ -32,6 +32,7 @@
     conn = sqlHelper.createConnection();
     sql = "select 1+1 as result;";
     return conn.query(sql, [], function(err, result) {
+      console.dir(err);
       test.ok(!err);
       test.ok(result.length > 0);
       test.ok(result[0].result === 2);
