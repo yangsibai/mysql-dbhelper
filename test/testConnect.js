@@ -2,7 +2,7 @@
 (function() {
   var sqlHelper;
 
-  sqlHelper = require('../lib/index')({
+  sqlHelper = require('../src/index')({
     dbConfig: {
       host: '192.168.1.88',
       user: 'root',

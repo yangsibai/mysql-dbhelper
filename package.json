@@ -2,8 +2,10 @@
 	"name": "mysql-dbhelper",
 	"version": "0.2.11",
 	"description": "sql helper for mysql",
-	"main": "lib/index.js",
+	"main": "./lib/index.js",
 	"scripts": {
+        "prepublish": "coffee -co lib/ src/*.coffee",
+        "postpublish": "rm -rf lib",
 		"test": "nodeunit test/*.js"
 	},
 	"repository": {
