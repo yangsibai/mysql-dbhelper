@@ -1,6 +1,6 @@
 ##mysql-dbhelper
 
-一个简单，易用，友好的 node-mysql 帮助模块。
+A simple [node-mysql](https://github.com/felixge/node-mysql) utility to help you work with db operation easily.
 
 [![NPM](https://nodei.co/npm/mysql-dbhelper.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/mysql-dbhelper/)
 
@@ -8,14 +8,14 @@
 
     npm install mysql-dbhelper
 
-###Get Start
+###Get Started
 
 	dbHelper = require("mysql-dbhelper")(options);
 	conn = dbHelper.createConnection();
 	sql = "SELECT name FROM users WHERE id=?";
 	userId = 1;
 	conn.$executeScalar sql, [userId], function(err, name){
-		// code
+		// work with name
 	};
 
 ###Options
@@ -35,28 +35,68 @@
 		timeout: 30, // auto close connection after 30 seconds
 		debug: false
 	}
+	
+###Note
+
+1. All methods which start with a `$` mean that the connection will auto close after execute.
+
+For example:
+
+    conn.$executeFirstRow('SELECT * FROM users WHERE id = ?', [1], function(err, row){
+        //The connection has been closed, you don't need to execute `conn.end()`
+    });
+    
+2. Connection will auto close if db error occured:
+
+    sql = 'INSERT INTO users(email, password) VALUES (?, ?, ?)'; // Will cause a error: need too value but supply three
+    params = ['foo@gmail.com', 'bar']
+
+    conn.insert(sql, params, function(err, success){
+        if(err){
+            console.dir(err);  // Don't need a `conn.end`
+        }
+        else{
+            // Do other things and don't forget close the connection
+            console.log('success');
+            conn.end();
+        }
+    });
+
+This can be handy if you use `CoffeeScript`:
+
+    conn.insert sql, params, (err, success)->
+        return cb(err) if err # Don't need close connection if error occured.
+
+        #Do other things and don't forget close the connection
+        console.log 'success'
+        conn.end()
+
+3. `params` can be omited in every api. If your sql don't need a param, just omit the second param.
+
+For example:
+    
+    conn.$execute('SELECT * FROM users', [], callback);
+    
+is equal to:
+
+    conn.$execute('SELECT * FROM users', callback);
 
 ##api
 
-以下所有方法，添加 `$` 开头表示执行 `sql` 结束后自动关闭连接。
-
-例如 `conn.execute` 对应的自动关闭连接的方法为 `conn.$execute`。
-
-所有方法中第二个参数参数数组 `params` 都是可以省略的。
 
 ###conn.execute(sql, [params,] callback)
 
-执行 sql 然后返回执行结果
+Execute a sql query:
 
 	conn.execute(sql, [params], function(err, res){
-		console.log(result.length); //返回结果集的行数
-		console.log(result.insertId); //insert 语句插入完成后的自增id
-		console.log(result.affectedRows); //受影响的行数
+		console.log(result.length);
+		console.log(result.insertId);
+		console.log(result.affectedRows);
     });
 
 ###conn.executeScalar(sql, [params,] callback)
 
-执行 `sql` 然后返回第一行第一列的值，如果没有，返回 `null`
+Execute a sql and return first row and first column value, return `null` if don't have one.
 
 	conn.executeScalar(sql, [params], function(err, val){
 		console.dir(err);
@@ -65,7 +105,7 @@
 
 ###conn.executeFirstRow(sql, [params,] callback)
 
-执行 `sql` 然后返回第一行的内容,如果没有，返回 `null`
+Execute a sql and return first row, return `null` if don't have one.
 
 	conn.executeFirstRow(sql, [params], (err, firstRow){
 		console.dir(err);
@@ -74,7 +114,7 @@
 
 ###conn.executeNonQuery(sql, [params,] callback)
 
-执行 `sql` 然后返回受影响的行数
+Execute a sql and return affect rows count:
 
 	conn.executeNonQuery(sql, [params], function(err, affectRowsCount){
 		console.dir(err);
@@ -83,17 +123,17 @@
 
 ###conn.update(sql, [params,] callback)
 
-执行 `update` 语句，然后返回是否成功，和真实受影响的行数
+Execute a `update` query:
 
 	conn.update(sql, [params], function(err, success, affectedRows){
 		console.dir(err);
 		console.log(success);
-		console.log(affectedRows);
+		console.log(affectedRows); //Note: affectedRows is real affected count
 	});
 
 ###conn.insert(sql, [params,] callback)
 
-执行 `insert` 语句，然后返回是否成功，和自增 id
+Execute a `insert` query:
 
 	conn.insert(sql, [params], function(err, success, insertId){
 		console.dir(err);
@@ -103,13 +143,9 @@
 
 ###conn.exist(sql, [params,] callback)
 
-执行 `sql` ,返回是否存在查询结果
+Execute a sql query, return `true` if has a query result
 
-	conn.insert(sql, [params], function(err, exist){
+	conn.insert(sql, [params], function(err, exist, result){
 		console.dir(err);
 		console.log(exist);
 	});
-
-##TODO
-
-+ more test
