@@ -1,6 +1,6 @@
 {
 	"name": "mysql-dbhelper",
-	"version": "0.2.14",
+	"version": "0.2.15",
 	"description": "sql helper for mysql",
 	"main": "./lib/index.js",
 	"scripts": {

@@ -308,9 +308,9 @@ exist = (sql, paras, cb)->
             if err
                 cb err
             else if results.length > 0
-                cb null, true
+                cb null, true, results
             else
-                cb null, false
+                cb null, false, results
 
 ###
     判断是否存在，然后自动关闭连接
