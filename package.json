@@ -1,6 +1,6 @@
 {
 	"name": "mysql-dbhelper",
-	"version": "0.2.15",
+	"version": "0.2.16",
 	"description": "sql helper for mysql",
 	"main": "./lib/index.js",
 	"scripts": {
@@ -19,7 +19,7 @@
 		"utility"
 	],
 	"author": "massimo",
-	"license": "GPL3",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/yangsibai/mysql-helper/issues"
 	},
