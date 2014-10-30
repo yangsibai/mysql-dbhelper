@@ -32,18 +32,24 @@ createConnection = () ->
 
     #auto close connection when timeout
     timeoutObj = setTimeout ->
-        unless conn._socket._readableState.ended
-            proxied.apply(conn)
-        else
-            console.warn("connection has been closed, last query:#{conn.lastQuery}")
+        try
+            unless conn._socket._readableState.ended
+                proxied.apply(conn)
+            else
+                console.warn("connection has been closed, last query:#{conn.lastQuery}")
+        catch e
+            console.log e.message, conn.lastQuery
     , _options.timeout * 1000
 
     conn.end = (cb)->
         clearTimeout(timeoutObj)
-        unless conn._socket._readableState.ended
-            return proxied.apply(this, arguments)
-        else
-            console.warn("connection has been closed, last query:#{conn.lastQuery}")
+        try
+            unless conn._socket._readableState.ended
+                return proxied.apply(this, arguments)
+            else
+                console.warn("connection has been closed, last query:#{conn.lastQuery}")
+        catch e
+            console.log e.message, conn.lastQuery
 
     queryProxied = conn.query
     conn.query = ->
