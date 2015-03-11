@@ -23,12 +23,13 @@ class DbHelper
         conn = mysql.createConnection(@cfg.dbConfig)
 
         endConnectionProxy = conn.end
-
         #auto close connection when timeout
         timeoutObj = setTimeout ->
             try
                 unless conn._socket._readableState.ended
-                    endConnectionProxy.apply(conn)
+                    endConnectionProxy.apply conn
+                    if conn.busy
+                        console.warn("query `#{conn.lastQuery}` cause timeout")
                 else
                     console.error("connection has been closed, last query:#{conn.lastQuery}")
             catch e
@@ -54,10 +55,12 @@ class DbHelper
         ###
         conn.query = (sql, paras, cb)->
             conn.lastQuery = sql
+            conn.busy = true
             if _.isFunction(paras) and _.isUndefined(cb)
                 cb = paras
                 paras = []
             queryProxy.call this, sql, paras, (err, result)->
+                this.busy = false
                 if err
                     console.dir err if _options.debug
                     _options.onError err
@@ -77,8 +80,11 @@ class DbHelper
                 cb = paras
                 paras = []
             @execute sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end ->
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
+
 
         ###
             查询第一行第一列的内容
@@ -112,8 +118,10 @@ class DbHelper
                 cb = paras
                 paras = []
             @executeScalar sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end =>
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
 
         ###
             更新
@@ -145,8 +153,10 @@ class DbHelper
                 cb = paras
                 paras = []
             @update sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end ->
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
 
         ###
             插入
@@ -178,8 +188,10 @@ class DbHelper
                 cb = paras
                 paras = []
             @insert sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end ->
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
 
         ###
             执行sql,返回受影响的行数
@@ -211,8 +223,10 @@ class DbHelper
                 cb = paras
                 paras = []
             @executeNonQuery sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end ->
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
 
         ###
             获取第一行数据
@@ -244,8 +258,10 @@ class DbHelper
                 cb = paras
                 paras = []
             @executeFirstRow sql, paras, ()=>
-                cb.apply this, arguments if _.isFunction(cb)
-                @end()
+                thisCache = this
+                argumentsCache = arguments
+                @end ->
+                    cb.apply thisCache, argumentsCache if _.isFunction(cb)
 
         ###
             判断是否存在
@@ -277,14 +293,14 @@ class DbHelper
                 cb = paras
                 paras = []
             @execute sql, paras, (err, results)=>
-                if _.isFunction(cb)
-                    if err
-                        cb err
-                    else if results.length > 0
-                        cb null, true, results
-                    else
-                        cb null, false, results
-                    @end()
+                @end ->
+                    if _.isFunction(cb)
+                        if err
+                            cb err
+                        else if results.length > 0
+                            cb null, true, results
+                        else
+                            cb null, false, results
 
         return conn
 
