@@ -20,7 +20,6 @@ exports.testCreateConnection = (test)->
     conn = sqlHelper.createConnection()
     sql = "select 1+1 as result;"
     conn.query sql, [], (err, result)->
-        console.dir(err)
         test.ok not err
         test.ok result.length > 0
         test.ok result[0].result is 2
@@ -42,6 +41,7 @@ exports.test$Execute = (test)->
     conn = sqlHelper.createConnection()
     sql = "select 1+1 as result;"
     conn.$execute sql, (err, result)->
+        console.log "结束"
         test.ok not conn._socket._readableState.ended
         test.ok not err
         test.ok result.length > 0
@@ -65,10 +65,10 @@ exports.testEndConnection = (test)->
     sql = "select 1 + 1 as result;"
     conn.executeScalar sql, (err, result)->
         test.ok not err
+        console.log result
         test.ok result is 2
-        conn.end ()->
-            try
-                conn.end()
-            catch e
-                test.ok e
-            test.done()
+        conn.end (err)->
+            test.ok not err
+            conn.end (err)->
+                test.ok err
+                test.done()
