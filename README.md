@@ -31,11 +31,11 @@ A simple [node-mysql](https://github.com/felixge/node-mysql) utility to help you
         onError: function(err){
             console.dir(err);
         },
-        customError: null, // if specified , will hide original error, please catch real error by onError
+        customError: null, // if specified, will hide original error, please catch real error by onError, this is handy when you don't want to show server error to user
         timeout: 30, // auto close connection after 30 seconds
         debug: false
     }
-    
+
 ###Note
 
 **1. All methods which start with a `$` mean that the connection will auto close after execute.**
@@ -46,7 +46,7 @@ For example:
         //The connection has been closed, you don't need to execute `conn.end()`
     });
 
-**2. Connection will auto close if db error occured:
+**2. Connection will auto close if db error occured:**
 
     sql = 'INSERT INTO users(email, password) VALUES (?, ?, ?)'; // This will cause a error
     params = ['foo@gmail.com', 'bar']
@@ -76,7 +76,7 @@ For example:
 
     conn.$execute('SELECT * FROM users', [], callback);
 
-is equal to:
+equals to:
 
     conn.$execute('SELECT * FROM users', callback);
 
@@ -147,3 +147,7 @@ Execute a sql query, return `true` if has a query result
         console.dir(err);
         console.log(exist);
     });
+
+##License
+
+MIT
